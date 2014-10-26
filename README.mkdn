@@ -1,5 +1,25 @@
-Cristal 2: An SMPP Gateway
+Cristal 3: A Modular SMPP Gateway
 ==========================
+
+Features
+---
+-   Modular design
+-   Implements SMPP version 3.4
+-   Keyword-based matching
+-   JSON-based interchange format
+-   Push (by HTTP POST) and pull (by TCP socket)
+-   Rabbit MQ messaging layer\*
+-   Web management interface
+-   Dynamic reconfiguration
+-   Re-entrance
+-   Preprocessor
+-   High throughput
+-   Module libraries in multiple languages.
+-   Wildcard modules
+
+
+General
+---
 Cristal sits between arbitrary applications and an SMPP gateway. It exposes an interface via TCP to which applications can connect and, using JSON, send commands to it, to execute things like sending messages (and, of course, getting messages sent to them).
 
 The applications are identified by keyword; the first word in an SMS message is considered to be the keyword.
