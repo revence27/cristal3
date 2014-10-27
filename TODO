@@ -1,2 +1,11 @@
 RabbitMQ.
 Delivery reports, rigidly.
+Data.ByteString!
+SMPP > 3.4 ...
+Replace JSON parser?
+Push (by HTTP POST) and pull (by TCP socket)
+Rabbit MQ messaging layer\*
+Web management interface
+-   Embedded, sandboxed JavaScript modules
+-   Security and privacy provisions
+-   Pre-processor

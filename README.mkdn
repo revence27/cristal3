@@ -1,10 +1,41 @@
-Cristal 3: A Modular SMPP Gateway
+Cristal 3: A Modular SMS Gateway
 ==========================
+
+About Cristal
+---
+Cristal is an SMS gateway that exposes SMPP transactions to external modules in a secure and auditable manner. It is designed to pass on all non-essential tasks to external modules, to which it exposes the messages at various points of processing them.
+Primary handling of messages, including persisting them reliably in case of network or hardware failure, is handled by the gateway itself, while providing services based on those messages is handled by external modules.
+
+With a simple interface, the modules are able to do more than just respond to incoming messages, since they are able to generate incoming as well as outgoing messages; they are also able to pass messages to other modules (for example), and also because of the module architecture that allows long-running processes that maintain internal state between messages, many types of applications, including server systems, are able to implement (or themselves be) Cristal modules.
+
+Although the simpler single-request modules are supported, long-running modules are particularly efficient in cases where traffic spikes make the creating and tearing down of connections inefficient.
+This is also simple and efficient in the cases where modules are pushing data to the gateway, in response to events in a long-running process.
+The module API also allows for arbitrarily-long messages, and indicating multiple recipients per message.
+
+In having such a simple-but-powerful module system, and exposing to the modules an ability to process a message through the system with arbitrary recursivity, Cristal allows for extension of its core capacity by the modules, to introduce such useful but non-essential features as time-based throttling of outgoing messages, spam control, billing, public-key cryptographic strategies, _post hoc_ message translation, and so on.
+
+The modules have to be authenticated, based on the configuration of Cristal, which allows for the system to be exposed to third-party systems safely. The authentication details of the modules indicate the keyword by which they are associated. If a message comes in with a particular word as the first in the text, it is sent for handling to the module that indicated that string as its keyword.
+
+Some modules can be registered as "wildcard modules", which receive a copy of every message, and which can even implement more-refined routing logic by which the messages can be passed on to other modules according to the contents of the message, or some other criteria. Such modules are also useful for logging, and doing other book-keeping tasks that are best-handled outside of Cristal proper.
+
+There is another special type of module, the "preprocessor module" which receive every message before it is passed on to other modules, and can either add or strip information to the message, for privacy or auditing reasons, before the message is handed on.
+
+Cristal starts up with the provided configuration as the default, but can be given a new configuration after starting up, which will replace the previous in memory restarting. This allows for external control of the system, and even period-based reconfiguration.
+
+All data interchange between Cristal and the modules uses the JSON format, which is a standard format that greatly eases interoperability. The format is simple and is supported by every programming language. As a result, there are Cristal module libraries for a variety of programming languages, both systems and scripting languages.
+
+Cristal 3 includes a simple web management interface, which also features a simple simulator and development environment that allows for creating and testing Cristal modules in JavaScript. These modules are restricted in what they can do, and limited almost only to making HTTP requests and sending back responses, with no access to the file system or databases. This is particularly suited to cases where the module is supposed to be simple. Because they are on the local system itself, and are already pre-loaded, they are particularly fast and resource-efficient. The JavaScript engine is provided by Node.js.
+
+Cristal 3 also includes an additional message queue layer, provided by Rabbit MQ, which exposes a reliable means of managing the message storage and routing, which is directly accessible to the modules as a standardised alternative interchange strategy (i.e., the AQMP standard). In these cases, the data itself can be encoded as binary JSON, in order to facilitate fast and efficient handling of data by modules that may prefer a more-compact interchange format.
+
+Cristal implements the commonest SMS exchange standard, SMPP version 3.4.
+
 
 Features
 ---
 -   Modular design
 -   Implements SMPP version 3.4
+-   Multicast
 -   Keyword-based matching
 -   JSON-based interchange format
 -   Push (by HTTP POST) and pull (by TCP socket)
@@ -16,22 +47,5 @@ Features
 -   High throughput
 -   Module libraries in multiple languages.
 -   Wildcard modules
-
-
-General
----
-Cristal sits between arbitrary applications and an SMPP gateway. It exposes an interface via TCP to which applications can connect and, using JSON, send commands to it, to execute things like sending messages (and, of course, getting messages sent to them).
-
-The applications are identified by keyword; the first word in an SMS message is considered to be the keyword.
-
-Because it doesn't create and destroy sockets for every request, it is highly scalable. And because the applications also connect once and receive the messages meant for them when the messages arrive, it also eliminates the lag and resource drain that may be encountered if, say, HTTP was used to reach the applications.
-
-It can be re-configured without restating it, by passing a new configuration (in JSON) to its configuration port.
-
-All communication is carried out in JSON.
-
-There are APIs for writing applications for Cristal2 included; for Ruby and Haskell.
-
-Issues
-------
-1.  It was written before `Data.ByteString` became common and workable in Haskell. So an upgrade would have to start with moving all instances of `String` to `Data.ByteString`. The work required would be something on the order of resulting in Cristal3.
+-   Embedded, sandboxed JavaScript modules
+-   Security and privacy provisions
