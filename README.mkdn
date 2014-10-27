@@ -20,7 +20,7 @@ Some modules can be registered as "wildcard modules", which receive a copy of ev
 
 There is another special type of module, the "preprocessor module" which receive every message before it is passed on to other modules, and can either add or strip information to the message, for privacy or auditing reasons, before the message is handed on.
 
-Cristal starts up with the provided configuration as the default, but can be given a new configuration after starting up, which will replace the previous in memory restarting. This allows for external control of the system, and even period-based reconfiguration.
+Cristal starts up with the provided configuration as the default, but can be given a new configuration after starting up, which will replace the previous in memory without restarting Cristal. This allows for external control of the system, and even period-based reconfiguration.
 
 All data interchange between Cristal and the modules uses the JSON format, which is a standard format that greatly eases interoperability. The format is simple and is supported by every programming language. As a result, there are Cristal module libraries for a variety of programming languages, both systems and scripting languages.
 
